@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Activity Tracker</title>
+</head>
+<body bgcolor="#f0f0f0">
+    <div align="center">
+        <h1>🔍 Real-Time User Activity Tracker</h1>
+    </div>
+
+    <table border="2" cellpadding="10" cellspacing="0" width="95%" align="center" bgcolor="#ffffff">
+        <tr bgcolor="#4CAF50">
+            <th width="30%"><font color="white" size="4">Metric</font></th>
+            <th width="70%"><font color="white" size="4">Value</font></th>
+        </tr>
+
+        <!-- Browser & Device Info -->
+        <tr bgcolor="#e8f5e9">
+            <td><b>🌐 Browser Vendor</b></td>
+            <td id="browserVendor">Detecting...</td>
+        </tr>
+        <tr>
+            <td><b>💻 Device Type</b></td>
+            <td id="deviceType">Detecting...</td>
+        </tr>
+        <tr bgcolor="#e8f5e9">
+            <td><b>📱 User Agent</b></td>
+            <td id="userAgent">Loading...</td>
+        </tr>
+        <tr>
+            <td><b>👆 Input Method</b></td>
+            <td id="inputMethod">Not detected</td>
+        </tr>
+
+        <!-- Window & Screen -->
+        <tr bgcolor="#fff3e0">
+            <td><b>📐 Window Dimensions</b></td>
+            <td id="windowDimensions">Calculating...</td>
+        </tr>
+        <tr>
+            <td><b>🖥️ Screen Resolution</b></td>
+            <td id="screenResolution">Loading...</td>
+        </tr>
+        <tr bgcolor="#fff3e0">
+            <td><b>📏 Available Screen</b></td>
+            <td id="availableScreen">Loading...</td>
+        </tr>
+
+        <!-- Scroll Tracking -->
+        <tr bgcolor="#e3f2fd">
+            <td><b>📜 Scroll Position (Y)</b></td>
+            <td id="scrollPosition">0 px</td>
+        </tr>
+        <tr>
+            <td><b>📊 Scroll Depth</b></td>
+            <td id="scrollDepth">0%</td>
+        </tr>
+        <tr bgcolor="#e3f2fd">
+            <td><b>⬆️ Scroll Direction</b></td>
+            <td id="scrollDirection">None</td>
+        </tr>
+        <tr>
+            <td><b>🔢 Total Scrolls</b></td>
+            <td id="scrollCount">0</td>
+        </tr>
+
+        <!-- Click Tracking -->
+        <tr bgcolor="#fce4ec">
+            <td><b>🖱️ Total Clicks</b></td>
+            <td id="clickCount">0</td>
+        </tr>
+        <tr>
+            <td><b>📍 Last Click Position</b></td>
+            <td id="lastClickPos">No clicks yet</td>
+        </tr>
+        <tr bgcolor="#fce4ec">
+            <td><b>🎯 Last Clicked Element</b></td>
+            <td id="lastClickedElement">None</td>
+        </tr>
+
+        <!-- Key Events -->
+        <tr bgcolor="#f3e5f5">
+            <td><b>⌨️ Total Key Presses</b></td>
+            <td id="keyPressCount">0</td>
+        </tr>
+        <tr>
+            <td><b>🔑 Last Key Pressed</b></td>
+            <td id="lastKeyPressed">None</td>
+        </tr>
+        <tr bgcolor="#f3e5f5">
+            <td><b>🎹 Special Keys Log</b></td>
+            <td id="specialKeys">None</td>
+        </tr>
+
+        <!-- Touch/Gesture Events -->
+        <tr bgcolor="#fff9c4">
+            <td><b>👉 Total Touch Events</b></td>
+            <td id="touchCount">0</td>
+        </tr>
+        <tr>
+            <td><b>🤏 Last Touch Position</b></td>
+            <td id="lastTouchPos">No touches</td>
+        </tr>
+        <tr bgcolor="#fff9c4">
+            <td><b>↔️ Swipe Direction</b></td>
+            <td id="swipeDirection">None</td>
+        </tr>
+        
+        <tr>
+            <td><b>🔍 Currently Focused</b></td>
+            <td id="currentFocus">None</td>
+        </tr>
+        <tr bgcolor="#e0f2f1">
+            <td><b>😴 Blur Events</b></td>
+            <td id="blurCount">0</td>
+        </tr>
+
+        <!-- Resize Events -->
+        <tr bgcolor="#ffebee">
+            <td><b>↔️ Resize Events</b></td>
+            <td id="resizeCount">0</td>
+        </tr>
+        <tr>
+            <td><b>📏 Last Resize</b></td>
+            <td id="lastResize">Not resized</td>
+        </tr>
+    </table>
+    <br><br>
+
+    <script>
+        // TRACKING DATA STORAGE
+        const trackingData = {
+            scrollCount: 0,
+            clickCount: 0,
+            keyPressCount: 0,
+            touchCount: 0,
+            focusCount: 0,
+            blurCount: 0,
+            resizeCount: 0,
+            lastScrollY: 0,
+            scrollDirection: 'none',
+            specialKeysLog: [],
+            sessionStart: new Date()
+        };
+
+        // 1. BROWSER DETECTION
+        function detectBrowser() {
+            const ua = navigator.userAgent;
+            let browser = 'Unknown';
+            
+            if (ua.indexOf('Safari') !== -1 && ua.indexOf('Chrome') === -1) {
+                browser = '🍎 Safari';
+            } else if (ua.indexOf('Chrome') !== -1 && ua.indexOf('Edg') === -1) {
+                browser = '🔵 Chrome';
+            } else if (ua.indexOf('Firefox') !== -1) {
+                browser = '🦊 Firefox';
+            } else if (ua.indexOf('Edg') !== -1) {
+                browser = '🌊 Edge';
+            } else if (ua.indexOf('MSIE') !== -1 || ua.indexOf('Trident') !== -1) {
+                browser = '🔷 Internet Explorer';
+            } else if (ua.indexOf('Opera') !== -1 || ua.indexOf('OPR') !== -1) {
+                browser = '🔴 Opera';
+            }
+            
+            document.getElementById('browserVendor').innerHTML = '<b>' + browser + '</b>';
+            document.getElementById('userAgent').innerHTML = '<small>' + ua + '</small>';
+        }
+        // 2. DEVICE TYPE DETECTION
+        function detectDevice() {
+            const ua = navigator.userAgent;
+            const width = window.innerWidth;
+            let device = '';
+            
+            if (/(tablet|ipad|playbook|silk)|(android(?!.*mobi))/i.test(ua)) {
+                device = '📱 Tablet';
+            } else if (/Mobile|Android|iP(hone|od)|IEMobile|BlackBerry|Kindle|Silk-Accelerated|(hpw|web)OS|Opera M(obi|ini)/.test(ua)) {
+                device = '📱 Mobile Phone';
+            } else {
+                device = '💻 Desktop';
+            }
+            
+            // Add responsive breakpoint info
+            if (width <= 640) {
+                device += ' (Mobile View - ≤640px)';
+            } else if (width <= 768) {
+                device += ' (Tablet View - ≤768px)';
+            } else if (width <= 991) {
+                device += ' (Small Desktop - ≤991px)';
+            } else {
+                device += ' (Desktop View - >991px)';
+            }
+            
+            document.getElementById('deviceType').innerHTML = '<b>' + device + '</b>';
+        }
+
+        // 3. WINDOW & SCREEN DIMENSIONS
+        function updateWindowDimensions() {
+            const width = window.innerWidth;
+            const height = window.innerHeight;
+            const screenW = screen.width;
+            const screenH = screen.height;
+            const availW = screen.availWidth;
+            const availH = screen.availHeight;
+            
+            document.getElementById('windowDimensions').innerHTML = 
+                '<b>' + width + ' × ' + height + ' px</b> (Inner Window)';
+            document.getElementById('screenResolution').innerHTML = 
+                '<b>' + screenW + ' × ' + screenH + ' px</b>';
+            document.getElementById('availableScreen').innerHTML = 
+                '<b>' + availW + ' × ' + availH + ' px</b> (Available)';
+        }
+        // 4. SCROLL TRACKING
+        function handleScroll() {
+            const scrollY = window.pageYOffset || document.documentElement.scrollTop;
+            const scrollHeight = document.documentElement.scrollHeight;
+            const clientHeight = document.documentElement.clientHeight;
+            const scrollable = scrollHeight - clientHeight;
+            const scrollPercent = Math.round((scrollY / scrollable) * 100);
+            
+            // Track scroll direction
+            if (scrollY > trackingData.lastScrollY) {
+                trackingData.scrollDirection = '⬇️ Down';
+            } else if (scrollY < trackingData.lastScrollY) {
+                trackingData.scrollDirection = '⬆️ Up';
+            }
+            
+            trackingData.lastScrollY = scrollY;
+            trackingData.scrollCount++;
+            
+            document.getElementById('scrollPosition').innerHTML = '<b>' + Math.round(scrollY) + ' px</b>';
+            document.getElementById('scrollDepth').innerHTML = '<b>' + scrollPercent + '%</b> (' + Math.round(scrollY) + '/' + scrollable + ' px)';
+            document.getElementById('scrollDirection').innerHTML = '<b>' + trackingData.scrollDirection + '</b>';
+            document.getElementById('scrollCount').innerHTML = '<b>' + trackingData.scrollCount + '</b>';
+            
+            // Check element visibility
+            checkElementVisibility();
+        }
+
+        // 6. CLICK EVENT TRACKING
+        function handleClick(event) {
+            trackingData.clickCount++;
+            const x = event.pageX || event.clientX;
+            const y = event.pageY || event.clientY;
+            const element = event.target.tagName + (event.target.id ? '#' + event.target.id : '') + 
+                           (event.target.className ? '.' + event.target.className : '');
+            
+            document.getElementById('clickCount').innerHTML = '<b>' + trackingData.clickCount + '</b>';
+            document.getElementById('lastClickPos').innerHTML = '<b>X: ' + x + ', Y: ' + y + '</b>';
+            document.getElementById('lastClickedElement').innerHTML = '<code>' + element + '</code>';
+        }
+        // 7. KEYBOARD EVENT TRACKING
+        function handleKeyPress(event) {
+            trackingData.keyPressCount++;
+            const key = event.key;
+            
+            // Track special keys
+            if (['Tab', 'Enter', 'Escape', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].indexOf(key) !== -1) {
+                trackingData.specialKeysLog.push(key);
+                if (trackingData.specialKeysLog.length > 10) {
+                    trackingData.specialKeysLog.shift();
+                }
+                document.getElementById('specialKeys').innerHTML = 
+                    '<b>' + trackingData.specialKeysLog.join(', ') + '</b>';
+            }
+            
+            document.getElementById('keyPressCount').innerHTML = '<b>' + trackingData.keyPressCount + '</b>';
+            document.getElementById('lastKeyPressed').innerHTML = '<b>' + key + '</b> (Code: ' + event.keyCode + ')';
+        }
+
+        // 8. TOUCH EVENT TRACKING
+        let touchStartX = 0;
+        let touchStartY = 0;
+
+        function handleTouchStart(event) {
+            trackingData.touchCount++;
+            const touch = event.touches[0];
+            touchStartX = touch.pageX;
+            touchStartY = touch.pageY;
+            
+            document.getElementById('touchCount').innerHTML = '<b>' + trackingData.touchCount + '</b>';
+            document.getElementById('lastTouchPos').innerHTML = 
+                '<b>X: ' + Math.round(touch.pageX) + ', Y: ' + Math.round(touch.pageY) + '</b>';
+        }
+
+        function handleTouchEnd(event) {
+            const touch = event.changedTouches[0];
+            const touchEndX = touch.pageX;
+            const touchEndY = touch.pageY;
+            
+            // Detect swipe direction
+            const diffX = touchEndX - touchStartX;
+            const diffY = touchEndY - touchStartY;
+            
+            if (Math.abs(diffX) > Math.abs(diffY)) {
+                if (diffX > 50) {
+                    document.getElementById('swipeDirection').innerHTML = '<b>➡️ Right Swipe</b>';
+                } else if (diffX < -50) {
+                    document.getElementById('swipeDirection').innerHTML = '<b>⬅️ Left Swipe</b>';
+                }
+            } else {
+                if (diffY > 50) {
+                    document.getElementById('swipeDirection').innerHTML = '<b>⬇️ Down Swipe</b>';
+                } else if (diffY < -50) {
+                    document.getElementById('swipeDirection').innerHTML = '<b>⬆️ Up Swipe</b>';
+                }
+            }
+        }
+        // 9. MOUSE DETECTION
+        function handleMouseMove(event) {
+            if (document.getElementById('inputMethod').innerHTML === 'Not detected') {
+                document.getElementById('inputMethod').innerHTML = '<b>🖱️ Mouse</b>';
+            }
+        }
+        //11. RESIZE EVENT TRACKING
+        function handleResize() {
+            trackingData.resizeCount++;
+            const timestamp = new Date().toLocaleTimeString();
+            
+            document.getElementById('resizeCount').innerHTML = '<b>' + trackingData.resizeCount + '</b>';
+            document.getElementById('lastResize').innerHTML = 
+                '<b>' + window.innerWidth + ' × ' + window.innerHeight + '</b> at ' + timestamp;
+            
+            // Update dimensions and device type on resize
+            updateWindowDimensions();
+            detectDevice();
+        }
+        function initTracking() {
+            // Initial detections
+            detectBrowser();
+            detectDevice();
+            updateWindowDimensions();
+            
+            // Event Listeners
+            window.addEventListener('scroll', handleScroll);
+            document.addEventListener('click', handleClick);
+            document.addEventListener('keydown', handleKeyPress);
+            window.addEventListener('resize', handleResize);
+            
+            // Touch events
+            document.addEventListener('touchstart', function(e) {
+                handleTouchStart(e);
+                document.getElementById('inputMethod').innerHTML = '<b>👆 Touch</b>';
+            });
+            document.addEventListener('touchend', handleTouchEnd);
+            
+            // Mouse detection
+            document.addEventListener('mousemove', handleMouseMove);
+        }
+
+        // Start tracking when page loads
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initTracking);
+        } else {
+            initTracking();
+        }
+    </script>
+</body>
+</html>
+
